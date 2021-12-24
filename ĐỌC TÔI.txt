@@ -1,0 +1,23 @@
+-Tên bảng ông tạo trong mySQL là: employees_management_system_database
+-Khi nhập ông lưu ý:
++ email với phone tui set là unique nên nếu ông gõ record nào mà trùng 2 cái này thì nó lỗi nhá
++ Date thì tui gõ trong postman là "yyyy-mm-dd" - gõ là string
++ Attribute depart của Employee là mặc định bằng 0 (nhân viên đó chưa làm cho phòng nào)
+-Tui sẽ không viết service như của fpt nhá, đọc trên mạng nghe bảo nó dùng cruid thay vì jpa..., với lại tui ko biết cái đó
+nên chỉ có controller thôi
+-Về controller thì có các Mapping:
++ "/getDepartments": get tất cả department
++ "/getDepartment/{id}": get department theo id
++ "/addDepartment": thêm department
++ "/updateDepartment/{id}": sửa thông tin department có id này
++ "/deleteDepartment/{id}": xóa department id này
++ "/deleteAllDepartment": xóa tất cả department
+
++ "/getEmployees": get tất cả employee
++ "/getEmployee/{id}": get employee có id này
++ "/addEmployee": thêm employee, đừng nhập thêm giá trị cho trường depart, nó auto = 0
++ "/addEmployeeToDepart/{departId}/{employeeId}": thêm employee vào department, cả 2 đều phải có sẵn, không có thì error
++ "/removeEmployeeFromDepart/{departId}/{employeeId}": Đuổi nhân viên ra khỏi phòng
++ "/updateEmployee/{id}": update thông tin employee
++ "/deleteAllEmployee": xóa tất cả employee
++ "/deleteEmployee/{id}": xóa nhân viên có id này
