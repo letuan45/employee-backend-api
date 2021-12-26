@@ -59,7 +59,7 @@ public class EmployeeController {
 	//Add employee to repository, *Note that this employee don't work for any department, depart attribute will be default: 0
 	@PostMapping("/addEmployee")
 	public Employee createEmployee(@RequestBody Employee employee) throws IllegalArgumentException {
-		if(!checkInArr(genderArr, employee.getGender()) || employee.getRole().length() > 0)
+		if(!checkInArr(genderArr, employee.getGender()))
 			throw new IllegalArgumentException("Gender is not valid");
 		return employeeRepository.save(employee);
 	}
