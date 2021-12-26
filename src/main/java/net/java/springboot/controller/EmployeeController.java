@@ -32,6 +32,16 @@ public class EmployeeController {
 	@Autowired
 	private DepartmentRepository departmentRepository;
 	
+	//Check a string element is in String Array element
+	boolean checkInArr(String [] arr, String testStr) {
+		for(String i : arr) {
+			if(i.equals(testStr)) return true;
+		}
+		return false;
+	}
+	
+	private String genderArr[] = new String[] {"male", "female", "other"};
+	
 	//Get all employees
 	@GetMapping("/getEmployees")
 	public List<Employee> getAllEmployee() {
@@ -48,8 +58,10 @@ public class EmployeeController {
 	
 	//Add employee to repository, *Note that this employee don't work for any department, depart attribute will be default: 0
 	@PostMapping("/addEmployee")
-	public Employee createEmployee(@RequestBody Employee employee) {
-			return employeeRepository.save(employee);
+	public Employee createEmployee(@RequestBody Employee employee) throws IllegalArgumentException {
+		if(!checkInArr(genderArr, employee.getGender()) || employee.getRole().length() > 0)
+			throw new IllegalArgumentException("Gender is not valid");
+		return employeeRepository.save(employee);
 	}
 	
 	//Add employee to department
@@ -58,6 +70,7 @@ public class EmployeeController {
 		//Find department with given id, throw an exception if could not find Department with given id
 		Department departmentFound = departmentRepository.findById(departId)
 				.orElseThrow(() -> new ResourceNotFoundException("Depart not exist with id: " + departId));	
+		
 		//Find employee with given id, throw an exception if could not find Employee with given id
 		Employee employeeFound = employeeRepository.findById(employeeId)
 				.orElseThrow(() -> new ResourceNotFoundException("Employee not exist with id: " + employeeId));
@@ -76,16 +89,23 @@ public class EmployeeController {
 	
 	//Remove employee from department
 	@PutMapping("/removeEmployeeFromDepart/{departId}/{employeeId}")
-	public ResponseEntity<Employee> removeEmployee(@PathVariable Long departId,@PathVariable Long employeeId) {
+	public ResponseEntity<Employee> removeEmployee(@PathVariable Long departId,@PathVariable Long employeeId) throws IllegalArgumentException {
 		//Find department with given id, throw an exception if could not find Department with given id
 		Department departmentFound = departmentRepository.findById(departId)
 				.orElseThrow(() -> new ResourceNotFoundException("Depart not exist with id: " + departId));	
+		
 		//Find employee with given id, throw an exception if could not find Employee with given id
 		Employee employeeFound = employeeRepository.findById(employeeId)
 				.orElseThrow(() -> new ResourceNotFoundException("Employee not exist with id: " + employeeId));
-			
-		if(departmentFound.getBasicSalary() < employeeFound.getSalary())
-				throw new ResourceNotFoundException("Employee's salary is more than basic depart's salary");
+		
+		if(departmentFound.getId() != employeeFound.getDepart()) {
+			throw new ResourceNotFoundException("This employee is not in this department");
+		}
+		
+		//The Employee is manager, throw an error 
+		if(departmentFound.getManager().getId() == employeeFound.getId()) {
+			throw new IllegalArgumentException("This Employee is a Manager");
+		}
 			
 		//Change depart attribute to 0
 		employeeFound.setDepart(0);
@@ -96,9 +116,57 @@ public class EmployeeController {
 		return ResponseEntity.ok(employeeFound);
 	}
 	
+	//Set an employee to manager
+	@PutMapping("/setToManager/{departId}/{employeeId}")
+	public ResponseEntity<Employee> setToManager(@PathVariable Long departId,@PathVariable Long employeeId) throws IllegalArgumentException{
+		//Find department with given id, throw an exception if could not find Department with given id
+		Department departmentFound = departmentRepository.findById(departId)
+				.orElseThrow(() -> new ResourceNotFoundException("Depart not exist with id: " + departId));	
+		
+		//Find employee with given id, throw an exception if could not find Employee with given id
+		Employee employeeFound = employeeRepository.findById(employeeId)
+				.orElseThrow(() -> new ResourceNotFoundException("Employee not exist with id: " + employeeId));
+		
+		//If this department already have a manager or this employee is not in the department
+		if(departmentFound.getManager() != null || employeeFound.getDepart() != departmentFound.getId()) {
+			throw new IllegalArgumentException("Can't set this employee to manager");
+		}
+			
+		//Set to manager
+		employeeFound.setRole("Manager");
+		employeeFound.setSalary(employeeFound.getSalary() * 1.5);
+		departmentFound.setManager(employeeFound);
+		departmentRepository.save(departmentFound);
+		return ResponseEntity.ok(employeeFound);
+	}
+	
+	//Set a manager to employee
+	@PutMapping("/setToStaff/{departId}/{employeeId}")
+	public ResponseEntity<Employee> setToStaff(@PathVariable Long departId,@PathVariable Long employeeId) throws IllegalArgumentException {
+		//Find department with given id, throw an exception if could not find Department with given id
+		Department departmentFound = departmentRepository.findById(departId)
+			.orElseThrow(() -> new ResourceNotFoundException("Depart not exist with id: " + departId));	
+			
+		//Find employee with given id, throw an exception if could not find Employee with given id
+		Employee employeeFound = employeeRepository.findById(employeeId)
+			.orElseThrow(() -> new ResourceNotFoundException("Employee not exist with id: " + employeeId));
+			
+		//If this employee is not manager
+		if(departmentFound.getManager().getId() != employeeFound.getId()) {
+			throw new IllegalArgumentException("This employee is not manager");
+		}
+				
+		//Set to manager
+		employeeFound.setRole("Staff");
+		employeeFound.setSalary(employeeFound.getSalary() / 1.5);
+		departmentFound.setManager(null);
+		departmentRepository.save(departmentFound);
+		return ResponseEntity.ok(employeeFound);
+	}
+	
 	//Update employee, throw an exception if could not find Employee with given id
 	@PutMapping("/updateEmployee/{id}")
-	public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee employeeDetails) {
+	public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee employeeDetails) throws IllegalArgumentException {
 		Employee employee = employeeRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Employee not exist with id: " + id));
 			
@@ -108,8 +176,11 @@ public class EmployeeController {
 		employee.setEmail(employeeDetails.getEmail());
 		employee.setGender(employeeDetails.getGender());
 		employee.setPhone(employeeDetails.getPhone());
-		employee.setRole(employeeDetails.getRole());
 		employee.setSalary(employeeDetails.getSalary());
+		
+		if(!employee.getRole().equals(employee.getRole())) {
+			throw new IllegalArgumentException("This employee's role has been changed");
+		}
 			
 		Employee updatedEmployee = employeeRepository.save(employee);
 		return ResponseEntity.ok(updatedEmployee);

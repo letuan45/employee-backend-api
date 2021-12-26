@@ -21,3 +21,19 @@ nên chỉ có controller thôi
 + "/updateEmployee/{id}": update thông tin employee
 + "/deleteAllEmployee": xóa tất cả employee
 + "/deleteEmployee/{id}": xóa nhân viên có id này
+
+*CHI TIẾT CẬP NHẬT
++ Cập nhật thêm các method toString()
++ Ở model Department có thêm manager(kiểu Employee) với quan hệ OneToOne với department. Trong department giờ sẽ có thêm 1 trường manager
++ Ở model Employee: mặc định role của employee là "Staff", nên không cần phải có thêm trường role khi tạo mới hoặc update
++ Gender input bắt buộc phải là một trong {"male", "female", "other"}(bắt trong controller)
++ Cập nhật Thêm chức năng thăng chức trưởng phòng:
+   - "/setToManager/{departId}/{employeeId}": Nếu phòng đã có trưởng phòng hoặc nhân viên muốn thăng chức này không nằm trong
+phòng ban này thì throws exception
+   - Sau đó update role thành "Manager" và tăng lương
++ Cập nhật Thêm chức năng giáng chức xuống nhân viên:
+   - "/setToStaff/{departId}/{employeeId}": Nếu nhân viên này không phải trưởng phòng thì throw exception
+   - Sau đó update role thành "Staff" và hạ lương
++ update thêm trường hợp khi update thông tin nhân viên: "/updateEmployee/{id}" -> throw error nếu role nhân viên bị thay đổi
++ update thêm trường hợp khi xóa nhân viên: "/removeEmployeeFromDepart/{departId}/{employeeId}" nếu nhân viên là trưởng phòng
+thì không được xóa và sau đó throw exception.

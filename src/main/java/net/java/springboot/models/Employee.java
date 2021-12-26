@@ -1,6 +1,7 @@
 package net.java.springboot.models;
 
 import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -20,49 +21,48 @@ public class Employee {
 	private long id;
 	
 	@Column(name = "first_name")
-	private String firstName;
+	protected String firstName;
 	
 	@Column(name = "last_name")
-	private String lastName;
+	protected String lastName;
 	
 	@Column(name = "gender")
-	private String gender;
+	protected String gender;
 	
-	@Column(name = "email", unique=true)
-	private String email;
+	@Column(name = "email", unique = true)
+	protected String email;
 	
-	@Column(name = "phone", unique=true)
-	private String phone;
+	@Column(name = "phone", unique = true)
+	protected String phone;
 	
 	@Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern = "dd/mm/yyyy")
-	private Date birthDay;
+	protected Date birthDay;
 	
 	@Column(name = "role")
-	private String role;
+	protected String role = "Staff";
 	
 	@Column(name = "salary")
-	private double salary;
+	protected double salary;
 	
 	@Column(name = "depart")
-	private long depart = 0;
+	protected long depart = 0;
 	
 	//Default Constructor
 	public Employee() {
 		super();
 	}
-
+	
 	//Constructor
 	public Employee(String firstName, String lastName, String gender, String email, String phone, Date birthDay,
-			String role, double salary) {
+			double salary) {
 		super();
 		this.firstName = firstName;
 		this.lastName = lastName;
-		this.gender = gender;
+		this.gender = gender;		
 		this.email = email;
 		this.phone = phone;
 		this.birthDay = birthDay;
-		this.role = role;
 		this.salary = salary;
 	}
 
@@ -145,4 +145,11 @@ public class Employee {
 	public void setDepart(long depart) {
 		this.depart = depart;
 	}
+
+	@Override
+	public String toString() {
+		return "Employee [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", gender=" + gender
+				+ ", email=" + email + ", phone=" + phone + ", birthDay=" + birthDay + ", role=" + role + ", salary="
+				+ salary + ", depart=" + depart + "]";
+	}	
 }

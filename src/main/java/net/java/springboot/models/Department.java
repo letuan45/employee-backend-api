@@ -10,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -25,9 +26,15 @@ public class Department {
 	@Column(name = "basicSalary")
 	private double basicSalary;
 	
+	//Set of employee
 	@OneToMany(targetEntity = Employee.class, cascade = CascadeType.ALL)
 	@JoinColumn(name = "depart_fk", referencedColumnName = "id")
 	Set<Employee> employee;
+	
+	//One manager
+	@OneToOne(cascade = CascadeType.ALL, targetEntity = Employee.class)
+    @JoinColumn(name = "manager_id", referencedColumnName = "id")
+    private Employee manager;
 	
 	//Default Constructor
 	public Department() {
@@ -71,5 +78,19 @@ public class Department {
 
 	public void setEmployee(Set<Employee> employee) {
 		this.employee = employee;
+	}
+
+	public Employee getManager() {
+		return manager;
+	}
+
+	public void setManager(Employee manager) {
+		this.manager = manager;
+	}
+
+	@Override
+	public String toString() {
+		return "Department [id=" + id + ", name=" + name + ", basicSalary=" + basicSalary + ", employee=" + employee
+				+ ", manager=" + manager + "]";
 	}
 }
