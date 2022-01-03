@@ -37,3 +37,21 @@ phòng ban này thì throws exception
 + update thêm trường hợp khi update thông tin nhân viên: "/updateEmployee/{id}" -> throw error nếu role nhân viên bị thay đổi
 + update thêm trường hợp khi xóa nhân viên: "/removeEmployeeFromDepart/{departId}/{employeeId}" nếu nhân viên là trưởng phòng
 thì không được xóa và sau đó throw exception.
+
+*CHI TIẾT CẬP NHẬT LẦN 3
++ models của employee, department có thêm các length cho từng thuộc tính, và set not null cho 1 số thuộc tính
++ Tên phòng ban có tính unique
++ Set employee trong department giờ là List
++ Trong department có thêm Manager với quan hệ one-to-one 
++ Phòng ban xóa bỏ basic salary thay vào là maxEmployees và numberOfEmployees
++ Thêm 1 nhân viên đã tồn tại sẽ throw exception, thêm sẽ cần id
++ Sửa thông tin phòng ban sẽ không được sửa maxEmployees nhỏ hơn ban đầu
++ Khi xóa 1 phòng ban, các nhân viên trong phòng ban sẽ là nhân viên tự do (không có phòng ban), trưởng phòng trở thành nhân viên thường
++ Có thể xóa 1 nhân viên bất kì, cho dù đó là trưởng phòng, khi xóa xong numberOfEmployees giảm đi 1
+
+--khi nhập json cho chức năng thêm phòng ban và sửa phòng ban chỉ cần như Sau
+{
+   "name": "IT",
+   "maxEmployees": 4
+}
+--với trường numberOfEmployees sẽ được tự động tăng hoặc giảm tùy chức năng nên không cần trường này trong json.
