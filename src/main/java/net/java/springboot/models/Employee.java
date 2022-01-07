@@ -15,7 +15,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Table(name = "Employee")
 public class Employee {
 	@Id
-	@Column(name = "id", nullable = false)
+	@Column(name = "id")
 	protected long id;
 	
 	@Column(name = "first_name", length = 25, nullable = false)
