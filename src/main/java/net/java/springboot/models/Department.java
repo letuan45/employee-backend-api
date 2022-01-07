@@ -45,9 +45,10 @@ public class Department {
 	}
 
 	//Constructor with name and basic salary
-	public Department(String name, double basicSalary) {
+	public Department(String name, int maxEmployee) {
 		super();
 		this.name = name;
+		this.maxEmployees = maxEmployee;
 	}
 
 	public long getId() {

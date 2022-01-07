@@ -91,10 +91,10 @@ public class DepartmentController {
 		}
 		//Add Manager as Staff
 		if(departmentFound.getManager() != null) {
-			Employee employeeTemp2 = new Employee(departmentFound.getManager());
-			employeeTemp2.setDepart(0);
-			employeeTemp2.setToStaff(factor);
-			employeesNew.add(employeeTemp2);
+			Employee employeeTemp = new Employee(departmentFound.getManager());
+			employeeTemp.setDepart(0);
+			employeeTemp.setToStaff(factor);
+			employeesNew.add(employeeTemp);
 		}
 		//Add temporary List to repository
 		departmentRepository.delete(departmentFound);

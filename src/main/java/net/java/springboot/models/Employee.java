@@ -79,21 +79,7 @@ public class Employee {
 		this.salary = employee.getSalary();
 		this.depart = employee.getDepart();
 	}
-	
-	//Constructor with Manager
-	public Employee(Manager manager) {
-		super();
-		this.id = manager.getId();
-		this.firstName = manager.getFirstName();
-		this.lastName = manager.getLastName();
-		this.gender = manager.getGender();		
-		this.email = manager.getEmail();
-		this.phone = manager.getPhone();
-		this.birthDay = manager.getBirthDay();
-		this.salary = manager.getSalary();
-		this.depart = manager.getDepart();
-	}
-	
+		
 	public void setToManager(double factor) {
 		setSalary(getSalary() * factor);
 		setRole("Manager");
