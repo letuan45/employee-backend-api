@@ -55,3 +55,23 @@ thì không được xóa và sau đó throw exception.
    "maxEmployees": 4
 }
 --với trường numberOfEmployees sẽ được tự động tăng hoặc giảm tùy chức năng nên không cần trường này trong json.
+
+*CHI TIẾT CẬP NHẬT LẦN 4
+- Thêm thư viện validation trong pom.xml
+<dependency>
+   <groupId>org.springframework.boot</groupId>
+   <artifactId>spring-boot-starter-validation</artifactId>
+</dependency>
+
+- Thêm validation đối với firstName và LastName của employee
++ firstName không cho phép có số và dấu khoảng trắng
++ lastName không cho phép có số và cho phép có dấu khoảng trắng
+
+- Thêm Validation cho email và phone 
+ 
+->> Các lỗi về validation này đều trả về trong response.data.errors: mảng các lỗi về validate
+
+- Xử lí throws exception khi có lỗi constrain trong mySQL, các lỗi thường là vi phạm unique constain trong mySQL
+lỗi này thường có trong response.data.message
++ Chưa bắt lỗi vi phạm constrain về length của dữ liệu... nếu bỏ trống ô input thì vẫn trả về error, nếu length dài
+vượt quá cho phép sẽ throws exception của mySQL (cái exception dài dài như hôm qua).

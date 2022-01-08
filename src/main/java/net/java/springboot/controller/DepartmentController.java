@@ -27,6 +27,9 @@ import net.java.springboot.repositories.EmployeeRepository;
 @RestController
 @RequestMapping("/api/v1/")
 public class DepartmentController {
+	//Variables 
+	double factor = 1.5;
+		
 	@Autowired
 	private DepartmentRepository departmentRepository;
 	
@@ -38,9 +41,6 @@ public class DepartmentController {
 	public List<Department> getAllDepartment() {
 		return departmentRepository.findAll();
 	}
-	
-	//Variables 
-	double factor = 1.5;
 	
 	//Get Department by ID, throw an exception if could not find Department with given id
 	@GetMapping("/departments/{id}")
@@ -56,6 +56,10 @@ public class DepartmentController {
 		if(department.getMaxEmployees() <= 0) {
 			throw new IllegalArgumentException("maxEmployee must > 0");
 		}
+		//Unique department.name
+		if(departmentRepository.findByName(department.getName()) != null) {
+			throw new IllegalArgumentException("This department's name have already exist");
+		}
 		return departmentRepository.save(department);
 	}
 	
@@ -67,6 +71,10 @@ public class DepartmentController {
 		//Only allow user set Max employee more than old Max employee
 		if(departmentDetails.getMaxEmployees() < departmentFound.getMaxEmployees()) {
 			throw new IllegalArgumentException("Can not set maxEmployee fewer than old maxEmployee");
+		}
+		//Unique department.name
+		if(!departmentFound.getName().equals(departmentDetails.getName()) && departmentRepository.findByName(departmentDetails.getName()) != null) {
+			throw new IllegalArgumentException("This department's name have already exist");
 		}
 		
 		departmentFound.setName(departmentDetails.getName());

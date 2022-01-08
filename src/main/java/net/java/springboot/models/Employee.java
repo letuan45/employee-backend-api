@@ -8,6 +8,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.Pattern;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -19,18 +21,22 @@ public class Employee {
 	protected long id;
 	
 	@Column(name = "first_name", length = 25, nullable = false)
+	@Pattern(regexp = "[a-zA-Z][a-zA-Z]*", message = "FirstName is not valid")
 	protected String firstName;
 	
 	@Column(name = "last_name", length = 50, nullable = false)
+	@Pattern(regexp = "[a-zA-Z][a-zA-Z ]*", message = "LastName is not valid")
 	protected String lastName;
 	
 	@Column(name = "gender", nullable = false)
 	protected String gender;
 	
 	@Column(name = "email", unique = true, nullable = false)
+	@Email(message = "Email is not valid")
 	protected String email;
 	
 	@Column(name = "phone", unique = true, nullable = false)
+	@Pattern(regexp = "0[0-9]{9}", message = "Phone is not valid")
 	protected String phone;
 	
 	@Temporal(TemporalType.DATE)

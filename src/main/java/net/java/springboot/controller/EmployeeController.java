@@ -9,6 +9,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +31,10 @@ import net.java.springboot.repositories.EmployeeRepository;
 @RestController
 @RequestMapping("/api/v1/")
 public class EmployeeController {
+	//Variables
+	double factor = 1.5;
+	private String genderArr[] = new String[] {"male", "female", "other"};
+	
 	@Autowired
 	private EmployeeRepository employeeRepository;
 	
@@ -43,10 +48,6 @@ public class EmployeeController {
 		}
 		return false;
 	}
-	 
-	//Variables
-	double factor = 1.5;
-	private String genderArr[] = new String[] {"male", "female", "other"};
 	
 	//Get all employees
 	@GetMapping("/employees")
@@ -64,13 +65,23 @@ public class EmployeeController {
 	
 	//Add employee to repository, *Note that this employee don't work for any department, depart attribute will be default: 0
 	@PostMapping("/employees")
-	public Employee createEmployee(@RequestBody Employee employee) throws IllegalArgumentException {
+	public Employee createEmployee(@Validated @RequestBody Employee employee) throws IllegalArgumentException {
 		if(!checkInArr(genderArr, employee.getGender()))
 			throw new IllegalArgumentException("Gender is not valid");
 		Optional<Employee> employeeFound = employeeRepository.findById(employee.getId());
 		//Check this employee has present in repository
 		if(employeeFound.isPresent()) {
 			throw new IllegalArgumentException("This employee has been created");
+		}
+		
+		//Unique employee.email
+		if(employeeRepository.findByEmail(employee.getEmail()) != null) {
+			throw new IllegalArgumentException("This employee's email has been registered");
+		}
+		
+		//Unique employee.phone
+		if(employeeRepository.findByPhone(employee.getPhone()) != null) {
+			throw new IllegalArgumentException("This employee's phone has been registered");
 		}
 		return employeeRepository.save(employee);
 	}
@@ -188,10 +199,20 @@ public class EmployeeController {
 	
 	//Update employee, throw an exception if could not find Employee with given id
 	@PutMapping("/employees/{id}")
-	public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee employeeDetails) throws IllegalArgumentException {
+	public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @Validated @RequestBody Employee employeeDetails) throws IllegalArgumentException {
 		Employee employeeFound = employeeRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Employee not exist with id: " + id));
-			
+		System.out.println(employeeDetails);	
+		
+		//Unique employee.email
+		if(!employeeFound.getEmail().equals(employeeDetails.getEmail()) && employeeRepository.findByEmail(employeeDetails.getEmail()) != null) {
+			throw new IllegalArgumentException("This employee's email has been registered");
+		}
+		//Unique employee.phone
+		if(!employeeFound.getPhone().equals(employeeDetails.getPhone()) && employeeRepository.findByPhone(employeeDetails.getPhone()) != null) {
+			throw new IllegalArgumentException("This employee's phone has been registered");
+		}
+		
 		employeeFound.setFirstName(employeeDetails.getFirstName());
 		employeeFound.setLastName(employeeDetails.getLastName());
 		employeeFound.setBirthDay(employeeDetails.getBirthDay());
@@ -203,6 +224,7 @@ public class EmployeeController {
 		if(!employeeFound.getRole().equals(employeeDetails.getRole())) {
 			throw new IllegalArgumentException("This employee's role has been changed");
 		}
+				
 		Employee updatedEmployee = employeeRepository.save(employeeFound);
 		return ResponseEntity.ok(updatedEmployee);
 	}

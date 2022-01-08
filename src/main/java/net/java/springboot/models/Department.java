@@ -21,7 +21,7 @@ public class Department {
 	private long id;
 	
 	@Column(name = "name", length = 100, unique = true, nullable = false)
-	String name;
+	private String name;
 	
 	@Column(name = "numberOfEmployees")
 	private int numberOfEmployees = 0;
